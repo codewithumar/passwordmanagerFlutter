@@ -3,14 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class generatepassword extends StatefulWidget {
-  const generatepassword({Key? key}) : super(key: key);
+class generatePassword extends StatefulWidget {
+  const generatePassword({Key? key}) : super(key: key);
 
   @override
-  State<generatepassword> createState() => _generatepasswordState();
+  State<generatePassword> createState() => generatePasswordState();
 }
 
-class _generatepasswordState extends State<generatepassword> {
+class generatePasswordState extends State<generatePassword> {
   final controller = TextEditingController();
   final controllerLength = TextEditingController();
   bool hasNumbers = false;
