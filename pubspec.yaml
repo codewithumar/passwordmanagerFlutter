@@ -29,6 +29,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_seekbar:
+    git: https://github.com/LiuC520/flutter_seekbar.git
 
 
   # The following adds the Cupertino Icons font to your application.
