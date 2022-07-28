@@ -3,16 +3,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class generatePassword extends StatefulWidget {
-  const generatePassword({Key? key}) : super(key: key);
+class GeneratePassword extends StatefulWidget {
+  const GeneratePassword({Key? key}) : super(key: key);
 
   @override
-  State<generatePassword> createState() => generatePasswordState();
+  State<GeneratePassword> createState() => GeneratePasswordState();
 }
 
-class generatePasswordState extends State<generatePassword> {
+class GeneratePasswordState extends State<GeneratePassword> {
   final controller = TextEditingController();
   final controllerLength = TextEditingController();
+  int value = 8;
   bool hasNumbers = false;
   bool hasSpecial = false;
   bool hasUpercase = false;
@@ -42,66 +43,10 @@ class generatePasswordState extends State<generatePassword> {
           const SizedBox(
             height: 20.0,
           ),
-          Row(
-            children: [
-              Checkbox(
-                  value: hasNumbers,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      hasNumbers = newValue!;
-                    });
-                  }),
-              const SizedBox(
-                width: 25.0,
-              ),
-              Checkbox(
-                  value: hasLowerCase,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      hasLowerCase = newValue!;
-                    });
-                  }),
-              const SizedBox(
-                width: 30.0,
-              ),
-              Checkbox(
-                  value: hasUpercase,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      hasUpercase = newValue!;
-                    });
-                  }),
-              const SizedBox(
-                width: 25.0,
-              ),
-              Checkbox(
-                  value: hasSpecial,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      hasSpecial = newValue!;
-                    });
-                  }),
-            ],
-          ),
-          Row(
-            children: const [
-              Text('Numbers'),
-              SizedBox(
-                width: 10.0,
-              ),
-              Text('LowerCase'),
-              SizedBox(
-                width: 10.0,
-              ),
-              Text('UperCase'),
-              SizedBox(
-                width: 15.0,
-              ),
-              Text('Special'),
-            ],
-          ),
           TextField(
               readOnly: true,
+              maxLines: 2,
+              minLines: 1,
               controller: controller,
               enableInteractiveSelection: false,
               decoration: InputDecoration(
@@ -111,7 +56,7 @@ class generatePasswordState extends State<generatePassword> {
                     icon: const Icon(Icons.copy),
                     onPressed: () {
                       if (controller.text == '') {
-                        buildsnackbar("Error");
+                        buildsnackbar("Error! Password Field is empty");
                       } else {
                         final data = ClipboardData(text: controller.text);
                         Clipboard.setData(data);
@@ -120,35 +65,146 @@ class generatePasswordState extends State<generatePassword> {
                       }
                     },
                   ))),
-          const SizedBox(
-            height: 20.0,
-          ),
-          TextField(
-              controller: controllerLength,
-              enableInteractiveSelection: false,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                    RegExp("^(?:[1-9]|[1-4][0-9]|50)\$")),
-              ],
-              decoration: const InputDecoration(
-                hintText: "Enter length of password between 8-50",
-                border: OutlineInputBorder(),
+          SizedBox(
+              height: 20,
+              width: 150,
+              child: Text(
+                "Password length: $value",
+                style: const TextStyle(fontWeight: FontWeight.bold),
               )),
+          const SizedBox(
+            height: 10.0,
+          ),
+          Slider(
+              onChanged: (double newvalue) {
+                setState(() {
+                  value = newvalue.round();
+                });
+              },
+              min: 8,
+              max: 50,
+              value: value.toDouble()),
           Row(
+            //mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               buildButton(),
               const SizedBox(
                 width: 20.0,
               ),
-              ElevatedButton(
+              IconButton(
+                onPressed: () {
+                  controller.text = "";
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+              const SizedBox(
+                width: 20.0,
+              ),
+              IconButton(
                   onPressed: () {
-                    controller.text = "";
+                    setState(() {
+                      showbottomsheet();
+                    });
                   },
-                  child: const Text('Refresh')),
+                  icon: const Icon(Icons.settings)),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildbottom() {
+    return Column(
+      children: <Widget>[
+        const SizedBox(
+          height: 10,
+        ),
+        const Center(
+            child: Text(
+          "Setting",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        )),
+        StatefulBuilder(
+          builder: (BuildContext context, setState) => CheckboxListTile(
+            value: hasNumbers,
+            title: const Text("Numbers"),
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (bool? newValue) {
+              setState(() {
+                hasNumbers = newValue!;
+              });
+            },
+          ),
+        ),
+        StatefulBuilder(
+          builder: (BuildContext context, setState) => CheckboxListTile(
+            value: hasUpercase,
+            title: const Text("Upper Case"),
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (bool? newValue) {
+              setState(() {
+                hasUpercase = newValue!;
+              });
+            },
+          ),
+        ),
+        StatefulBuilder(
+          builder: (BuildContext context, setState) => CheckboxListTile(
+            value: hasLowerCase,
+            title: const Text("Lower Case"),
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (bool? newValue) {
+              setState(() {
+                hasLowerCase = newValue!;
+              });
+            },
+          ),
+        ),
+        StatefulBuilder(
+          builder: (BuildContext context, setState) => CheckboxListTile(
+            value: hasSpecial,
+            title: const Text("Special Characters"),
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (bool? newValue) {
+              setState(() {
+                hasSpecial = newValue!;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  showbottomsheet() {
+    showModalBottomSheet(
+      backgroundColor: const Color(0xFF737373),
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.4,
+          maxChildSize: 0.9,
+          minChildSize: 0.32,
+          builder: (BuildContext context, ScrollController scrollController) =>
+              Container(
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                )),
+            height: 200,
+            //color: Colors.black,
+            child: buildbottom(),
+          ),
+        );
+      },
     );
   }
 
@@ -163,7 +219,6 @@ class generatePasswordState extends State<generatePassword> {
       ..showSnackBar(snackbar);
   }
 
-  validate() {}
   Widget buildButton() {
     return ElevatedButton(
         child: const Text("Generate"),
@@ -174,27 +229,8 @@ class generatePasswordState extends State<generatePassword> {
         });
   }
 
-  // Widget dropdownlist() {
-  //   String? value;
-  //   final items = ['1', '2', '3', '4'];
-  //   return DropdownButton<String>(
-  //        value: value,
-  //       isExpanded: true,
-  //       items: items.map(builddropdown).toList(),
-  //       onChanged: (value) => setState(() => setState(() {
-  //             value = value;
-  //           })));
-  // }
-
-  // DropdownMenuItem<String> builddropdown(String item) => DropdownMenuItem(
-  //     value: item,
-  //     child: Text(
-  //       item,
-  //       style: const TextStyle(fontWeight: FontWeight.bold),
-  //     ));
-
   String generatePasswrod() {
-    int length = int.parse(controllerLength.text);
+    int length = value;
     String capitalalphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     String smallalphabets = 'abcdefghijklmnopqrstuvwxyz';
     String numbers = '0123456789';
