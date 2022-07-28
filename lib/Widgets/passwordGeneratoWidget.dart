@@ -85,7 +85,6 @@ class GeneratePasswordState extends State<GeneratePassword> {
               max: 50,
               value: value.toDouble()),
           Row(
-            //mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               buildButton(),
@@ -200,7 +199,6 @@ class GeneratePasswordState extends State<GeneratePassword> {
                   top: Radius.circular(20),
                 )),
             height: 200,
-            //color: Colors.black,
             child: buildbottom(),
           ),
         );
