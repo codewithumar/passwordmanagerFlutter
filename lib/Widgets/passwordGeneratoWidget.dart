@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passmanager/Widgets/login.dart';
 
 class GeneratePassword extends StatefulWidget {
   const GeneratePassword({Key? key}) : super(key: key);
@@ -27,89 +29,101 @@ class GeneratePasswordState extends State<GeneratePassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text(
-            "Generate Password",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.red,
+    final auth = FirebaseAuth.instance;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Password Manager'), actions: [
+        IconButton(
+            onPressed: () {
+              auth.signOut();
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const login()));
+            },
+            icon: const Icon(Icons.logout))
+      ]),
+      body: Container(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Generate Password",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.red,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          TextField(
-              readOnly: true,
-              maxLines: 2,
-              minLines: 1,
-              controller: controller,
-              enableInteractiveSelection: false,
-              decoration: InputDecoration(
-                  hintText: "Your Random Password will be here",
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: () {
-                      if (controller.text == '') {
-                        buildsnackbar("Error! Password Field is empty");
-                      } else {
-                        final data = ClipboardData(text: controller.text);
-                        Clipboard.setData(data);
+            const SizedBox(
+              height: 20.0,
+            ),
+            TextField(
+                readOnly: true,
+                maxLines: 2,
+                minLines: 1,
+                controller: controller,
+                enableInteractiveSelection: false,
+                decoration: InputDecoration(
+                    hintText: "Your Random Password will be here",
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.copy),
+                      onPressed: () {
+                        if (controller.text == '') {
+                          buildsnackbar("Error! Password Field is empty");
+                        } else {
+                          final data = ClipboardData(text: controller.text);
+                          Clipboard.setData(data);
 
-                        buildsnackbar("Password Coppied");
-                      }
-                    },
-                  ))),
-          SizedBox(
-              height: 20,
-              width: 150,
-              child: Text(
-                "Password length: $value",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              )),
-          const SizedBox(
-            height: 10.0,
-          ),
-          Slider(
-              onChanged: (double newvalue) {
-                setState(() {
-                  value = newvalue.round();
-                });
-              },
-              min: 8,
-              max: 50,
-              value: value.toDouble()),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              buildButton(),
-              const SizedBox(
-                width: 20.0,
-              ),
-              IconButton(
-                onPressed: () {
-                  controller.text = "";
+                          buildsnackbar("Password Coppied");
+                        }
+                      },
+                    ))),
+            SizedBox(
+                height: 20,
+                width: 150,
+                child: Text(
+                  "Password length: $value",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                )),
+            const SizedBox(
+              height: 10.0,
+            ),
+            Slider(
+                onChanged: (double newvalue) {
+                  setState(() {
+                    value = newvalue.round();
+                  });
                 },
-                icon: const Icon(Icons.refresh),
-              ),
-              const SizedBox(
-                width: 20.0,
-              ),
-              IconButton(
+                min: 8,
+                max: 50,
+                value: value.toDouble()),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildButton(),
+                const SizedBox(
+                  width: 20.0,
+                ),
+                IconButton(
                   onPressed: () {
-                    setState(() {
-                      showbottomsheet();
-                    });
+                    controller.text = "";
                   },
-                  icon: const Icon(Icons.settings)),
-            ],
-          ),
-        ],
+                  icon: const Icon(Icons.refresh),
+                ),
+                const SizedBox(
+                  width: 20.0,
+                ),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        showbottomsheet();
+                      });
+                    },
+                    icon: const Icon(Icons.settings)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
