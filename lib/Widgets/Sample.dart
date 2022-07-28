@@ -12,6 +12,6 @@ class sampleClass extends StatefulWidget {
 class _sampleClassState extends State<sampleClass> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Scaffold();
   }
 }
