@@ -89,14 +89,17 @@ class GeneratePasswordState extends State<GeneratePassword> {
               height: 10.0,
             ),
             Slider(
-                onChanged: (double newvalue) {
-                  setState(() {
-                    value = newvalue.round();
-                  });
-                },
-                min: 8,
-                max: 50,
-                value: value.toDouble()),
+              onChanged: (double newvalue) {
+                setState(() {
+                  value = newvalue.round();
+                });
+              },
+              min: 8,
+              max: 50,
+              divisions: 42,
+              value: value.toDouble(),
+              label: "length : $value",
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

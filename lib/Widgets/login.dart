@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
+import 'package:passmanager/Widgets/passwordgeneratowidget.dart';
 
 class login extends StatefulWidget {
   const login({Key? key}) : super(key: key);
@@ -86,16 +86,25 @@ class _loginState extends State<login> {
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: ElevatedButton(
                       child: const Text('Login'),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Processing Data')),
                           );
                         }
-                        auth.signInWithEmailAndPassword(
-                            email: _email!, password: _password!);
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => GeneratePassword()));
+
+                        try {
+                          await auth.signInWithEmailAndPassword(
+                              email: _email!, password: _password!);
+
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => GeneratePassword()));
+                        } on FirebaseAuthException catch (error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(error.message!)));
+                        }
+                        setState(() {});
                       },
                     )),
                 Row(
