@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
 import 'package:passmanager/Widgets/Signup.dart';
-
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,20 +17,21 @@ class login extends StatefulWidget {
 }
 
 class _loginState extends State<login> {
-
   final auth = FirebaseAuth.instance;
   final user = FirebaseAuth.instance.currentUser;
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  String? email, password;
+  //String? email, password;
   late SharedPreferences logindata;
   late bool newuser;
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   @override
   void initState() {
     // TODO: implement initState
 
     check_if_already_login();
+    setState(() {});
     super.initState();
   }
 
@@ -47,8 +48,8 @@ class _loginState extends State<login> {
     newuser = (logindata.getBool('login') ?? true);
     //print(newuser);
     if (newuser == false) {
-      // Navigator.pushReplacement(context,
-      //     MaterialPageRoute(builder: (context) => const GeneratePassword()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const GeneratePassword()));
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const GeneratePassword()));
     }
@@ -57,6 +58,7 @@ class _loginState extends State<login> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formkey,
       child: Material(
         child: Padding(
             padding: const EdgeInsets.all(10),
@@ -75,9 +77,18 @@ class _loginState extends State<login> {
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     controller: nameController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return ("Please Enter email");
+                      }
+                      if ((RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[A-Z]")
+                          .hasMatch(value))) {
+                        return ("Please Enter valid email");
+                      }
+                      return null;
+                    },
                     onChanged: (value) {
-                      email = value;
-                      setState(() {});
+                      // email = value;
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -91,8 +102,18 @@ class _loginState extends State<login> {
                     obscureText: true,
                     controller: passwordController,
                     onChanged: (value) {
-                      password = value;
+                      // password = value;
                       setState(() {});
+                    },
+                    validator: (value) {
+                      RegExp regex = RegExp(r'^.{6,}$');
+                      if (value!.isEmpty) {
+                        return ("Please Enter your password");
+                      }
+                      if (!regex.hasMatch(value)) {
+                        return ("Please Enter a valid password from 6-30");
+                      }
+                      return null;
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -113,16 +134,25 @@ class _loginState extends State<login> {
                       child: const Text('Login'),
                       onPressed: () async {
                         logindata.setBool('login', false);
-                        logindata.setString('username', email!);
-                        showLoaderDialog(context);
-                        try {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const GeneratePassword()));
-                          buildsnackbar("Signed in");
-                        } on FirebaseAuthException catch (error) {
-                          buildsnackbar(error.toString());
+                        logindata.setString('username', nameController.text);
+                        if (_formkey.currentState!.validate()) {
+                          await auth
+                              .signInWithEmailAndPassword(
+                                  email: nameController.text,
+                                  password: passwordController.text)
+                              .then((uid) => {
+                                    Fluttertoast.showToast(
+                                        msg: "Login successfull"),
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const GeneratePassword()))
+                                  })
+                              .catchError((e) {
+                            Fluttertoast.showToast(msg: e!.message);
+                          });
+                        } else {
+                          Fluttertoast.showToast(msg: "Error");
                         }
                       },
                     )),
@@ -153,8 +183,8 @@ class _loginState extends State<login> {
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) =>  signup()));
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (context) => signup()));
                       },
                     )
                   ],

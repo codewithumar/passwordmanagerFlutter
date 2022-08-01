@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:passmanager/Widgets/login.dart';
 import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class signup extends StatefulWidget {
   const signup({Key? key}) : super(key: key);
@@ -15,8 +14,26 @@ class signup extends StatefulWidget {
 class _signupState extends State<signup> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  String? email, password;
+  late SharedPreferences logindata;
+  late String? username;
+  // String? email, password;
   final auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    username = "";
+    setState(() {});
+    initial();
+  }
+
+  void initial() async {
+    logindata = await SharedPreferences.getInstance();
+    setState(() {
+      username = logindata.getString('username');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +53,7 @@ class _signupState extends State<signup> {
               keyboardType: TextInputType.emailAddress,
               controller: nameController,
               onChanged: (value) {
-                email = value;
+                // email = value;
                 setState(() {});
               },
               decoration: const InputDecoration(
@@ -51,7 +68,7 @@ class _signupState extends State<signup> {
               obscureText: true,
               controller: passwordController,
               onChanged: (value) {
-                password = value;
+                //password = value;
                 setState(() {});
               },
               decoration: const InputDecoration(
@@ -68,14 +85,15 @@ class _signupState extends State<signup> {
                 onPressed: () async {
                   Container(
                       alignment: Alignment.topCenter,
-                      margin: EdgeInsets.only(top: 20),
+                      margin: const EdgeInsets.only(top: 20),
                       child: CircularProgressIndicator(
                         value: 0.8,
                       ));
                   try {
                     final credientals =
                         await auth.createUserWithEmailAndPassword(
-                            email: email!, password: password!);
+                            email: nameController.text,
+                            password: passwordController.text);
 
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (context) => const GeneratePassword()));
@@ -96,15 +114,15 @@ class _signupState extends State<signup> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const Text('Have an account?'),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               ElevatedButton(
                 child: const Text(
                   'Log in',
                   style: TextStyle(fontSize: 20),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const login()));
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const login()));
                 },
               )
             ],

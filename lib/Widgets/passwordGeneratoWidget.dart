@@ -27,6 +27,8 @@ class GeneratePasswordState extends State<GeneratePassword> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    username = "";
+    setState(() {});
     initial();
   }
 
