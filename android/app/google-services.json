@@ -29,6 +29,13 @@
             {
               "client_id": "566008138845-k8ke8t0p1oh6p4rhiuvdkqiphml2n4ki.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "566008138845-r1r4ai66s9l6q8tads3rhto1netflukm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.passmanager"
+              }
             }
           ]
         }

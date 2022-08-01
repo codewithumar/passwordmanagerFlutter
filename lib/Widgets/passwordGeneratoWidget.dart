@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passmanager/Widgets/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GeneratePassword extends StatefulWidget {
   const GeneratePassword({Key? key}) : super(key: key);
@@ -20,6 +21,21 @@ class GeneratePasswordState extends State<GeneratePassword> {
   bool hasSpecial = false;
   bool hasUpercase = false;
   bool hasLowerCase = false;
+  late SharedPreferences logindata;
+  late String? username;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initial();
+  }
+
+  void initial() async {
+    logindata = await SharedPreferences.getInstance();
+    setState(() {
+      username = logindata.getString('username');
+    });
+  }
 
   @override
   void dispose() {
@@ -35,6 +51,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
         IconButton(
             onPressed: () {
               auth.signOut();
+              logindata.setBool('login', true);
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const login()));
             },
@@ -46,6 +63,13 @@ class GeneratePasswordState extends State<GeneratePassword> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(
+              username.toString(),
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.red,
+              ),
+            ),
             const Text(
               "Generate Password",
               style: TextStyle(
@@ -245,7 +269,6 @@ class GeneratePasswordState extends State<GeneratePassword> {
   }
 
   String generatePasswrod() {
-    int length = value;
     String capitalalphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     String smallalphabets = 'abcdefghijklmnopqrstuvwxyz';
     String numbers = '0123456789';
@@ -255,8 +278,8 @@ class GeneratePasswordState extends State<GeneratePassword> {
     chars += hasNumbers == true ? numbers : "";
     chars += hasLowerCase == true ? smallalphabets : "";
     chars += hasSpecial == true ? special : "";
-    return List.generate(length, (index) {
-      final random = Random.secure().nextInt(chars.length);
+    return List.generate(value, (index) {
+      final random = Random().nextInt(chars.length);
       return chars[random];
     }).join('');
   }

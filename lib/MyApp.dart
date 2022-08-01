@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Password Manger',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.cyan,
       ),
       home: const MyHomePage(title: 'Password Manger'),
     );
@@ -29,6 +29,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: login());
+    return const login();
   }
 }

@@ -1,6 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:passmanager/Widgets/passwordgeneratowidget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:passmanager/Widgets/Singup.dart';
+import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
+import 'package:passmanager/Widgets/signup.dart';
+
+import 'package:passmanager/signin/Google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class login extends StatefulWidget {
   const login({Key? key}) : super(key: key);
@@ -10,16 +18,47 @@ class login extends StatefulWidget {
 }
 
 class _loginState extends State<login> {
-  final _formKey = GlobalKey<FormState>();
-  String? _email, _password;
+  final _formkey = GlobalKey<FormState>();
   final auth = FirebaseAuth.instance;
+  final user = FirebaseAuth.instance.currentUser;
+  final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  String? email, password;
+  late SharedPreferences logindata;
+  late bool newuser;
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    check_if_already_login();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    nameController.dispose();
+    passwordController.dispose();
+  }
+
+  void check_if_already_login() async {
+    logindata = await SharedPreferences.getInstance();
+    newuser = (logindata.getBool('login') ?? true);
+    //print(newuser);
+    if (newuser == false) {
+      // Navigator.pushReplacement(context,
+      //     MaterialPageRoute(builder: (context) => const GeneratePassword()));
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const GeneratePassword()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
+    return Form(
+      child: Material(
         child: Padding(
             padding: const EdgeInsets.all(10),
             child: ListView(
@@ -35,17 +74,11 @@ class _loginState extends State<login> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Valid Email';
-                      }
-                      return null;
-                    },
+                    keyboardType: TextInputType.emailAddress,
                     controller: nameController,
                     onChanged: (value) {
-                      setState(() {
-                        _email = value.trim();
-                      });
+                      email = value;
+                      setState(() {});
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -57,17 +90,10 @@ class _loginState extends State<login> {
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: TextFormField(
                     obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter password';
-                      }
-                      return null;
-                    },
                     controller: passwordController,
                     onChanged: (value) {
-                      setState(() {
-                        _password = value.trim();
-                      });
+                      password = value;
+                      setState(() {});
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -87,38 +113,49 @@ class _loginState extends State<login> {
                     child: ElevatedButton(
                       child: const Text('Login'),
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
-                          );
-                        }
-
+                        logindata.setBool('login', false);
+                        logindata.setString('username', email!);
+                        showLoaderDialog(context);
                         try {
-                          await auth.signInWithEmailAndPassword(
-                              email: _email!, password: _password!);
-
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (context) => GeneratePassword()));
+                                  builder: (context) =>
+                                      const GeneratePassword()));
+                          buildsnackbar("Signed in");
                         } on FirebaseAuthException catch (error) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(error.message!)));
+                          buildsnackbar(error.toString());
                         }
-                        setState(() {});
                       },
                     )),
+                const SizedBox(height: 10),
+                Container(
+                  height: 50,
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        onPrimary: Colors.black,
+                      ),
+                      onPressed: () {
+                        signInWithGoogle();
+                      },
+                      icon: const FaIcon(
+                        FontAwesomeIcons.google,
+                        color: Colors.amber,
+                      ),
+                      label: const Text('Signup with google')),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const Text('Does not have account?'),
-                    TextButton(
+                    ElevatedButton(
                       child: const Text(
                         'Sign up',
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        auth.createUserWithEmailAndPassword(
-                            email: _email!, password: _password!);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => const signup()));
                       },
                     )
                   ],
@@ -127,5 +164,52 @@ class _loginState extends State<login> {
             )),
       ),
     );
+  }
+
+  buildsnackbar(String message) {
+    final snackbar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    );
+
+    ScaffoldMessenger.of(context)
+      ..removeCurrentMaterialBanner()
+      ..showSnackBar(snackbar);
+  }
+
+  showLoaderDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          const CircularProgressIndicator(),
+          Container(
+              margin: const EdgeInsets.only(left: 7),
+              child: const Text("Loading...")),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+    buildsnackbar("Loged in");
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const GeneratePassword()));
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }
