@@ -47,7 +47,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
     return Scaffold(
-      appBar: AppBar(title: const Text('Password Manager'), actions: [
+      appBar: AppBar(title: Text(username.toString()), actions: [
         IconButton(
             onPressed: () {
               auth.signOut();

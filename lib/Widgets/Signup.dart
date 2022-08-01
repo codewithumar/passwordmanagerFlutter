@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:passmanager/Widgets/login.dart';
 import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
 
 class signup extends StatefulWidget {
@@ -91,6 +92,23 @@ class _signupState extends State<signup> {
                   }
                 },
               )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text('Have an account?'),
+              SizedBox(width: 20),
+              ElevatedButton(
+                child: const Text(
+                  'Log in',
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const login()));
+                },
+              )
+            ],
+          ),
         ],
       ),
     );

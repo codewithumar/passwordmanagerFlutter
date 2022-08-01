@@ -2,12 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:passmanager/Widgets/Singup.dart';
-import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
-import 'package:passmanager/Widgets/signup.dart';
 
-import 'package:passmanager/signin/Google_sign_in.dart';
-import 'package:provider/provider.dart';
+import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
+import 'package:passmanager/Widgets/Signup.dart';
+
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class login extends StatefulWidget {
@@ -18,7 +17,7 @@ class login extends StatefulWidget {
 }
 
 class _loginState extends State<login> {
-  final _formkey = GlobalKey<FormState>();
+
   final auth = FirebaseAuth.instance;
   final user = FirebaseAuth.instance.currentUser;
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
@@ -155,7 +154,7 @@ class _loginState extends State<login> {
                       ),
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => const signup()));
+                            builder: (context) =>  signup()));
                       },
                     )
                   ],
