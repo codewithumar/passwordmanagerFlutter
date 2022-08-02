@@ -41,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
       // child: _widgetOptions.elementAt(_selectedIndex),
 
       bottomNavigationBar: BottomNavigationBar(
-
         showSelectedLabels: true,
         iconSize: 20,
         items: const <BottomNavigationBarItem>[
@@ -57,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.add),
             label: 'Add credientals',
           ),
-
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.cyan,
@@ -82,30 +80,30 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog (
+        return AlertDialog(
           title: const Text('Warrning'),
           content: SingleChildScrollView(
             child: Column(
               children: const <Widget>[
-                Text('Are You Sure yoy want to delete?.'),
+                Text('Are You Sure yoy want to Signout?.'),
               ],
             ),
           ),
-          actions: <Widget> [
+          actions: <Widget>[
             TextButton(
-              child: Text('Confirm'),
-              onPressed: ()async {
+              child: const Text('Confirm'),
+              onPressed: () async {
                 await auth.signOut().then((value) => {
-                  Fluttertoast.showToast(msg: "Signed Out"),
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const login()))
-                });
+                      Fluttertoast.showToast(msg: "Signed Out"),
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const login()))
+                    });
                 await GoogleSignIn().signOut();
-               // Navigator.of(context).pop();
+                // Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 //Navigator.of(context).pop();
               },

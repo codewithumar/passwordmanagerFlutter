@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _datainputState extends State<datainput> {
   TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    GlobalKey<FormState> _formkey=GlobalKey<FormState>();
+    GlobalKey<FormState> _formkey = GlobalKey<FormState>();
     return Material(
       child: Form(
         key: _formkey,
@@ -38,21 +39,19 @@ class _datainputState extends State<datainput> {
               Container(
                   padding: const EdgeInsets.all(5.0),
                   child: TextFormField(
-
-
                     validator: (value) {
-
                       if (value!.isEmpty) {
                         return ("Please Enter email");
-                      }
-                      if (!(RegExp("[\w-]+@([\w-]+\.)+[\w-]+")
-                          .hasMatch(value))) {
+                      } else if (!EmailValidator.validate(value)) {
                         return ("Please Enter valid email");
                       }
+
+                      // else if (!(RegExp("[\w-]+@([\w-]+\.)+[\w-]+")
+                      //     .hasMatch(value))) {
+                      //   return ("Please Enter valid email");
+                      // }
                       return null;
                     },
-
-
                     controller: emailController,
                     decoration: const InputDecoration(hintText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
@@ -72,7 +71,6 @@ class _datainputState extends State<datainput> {
                     },
                     controller: passcontroller,
                     decoration: InputDecoration(
-
                         hintText: 'Password',
                         suffixIcon: IconButton(
                             onPressed: () {
@@ -86,13 +84,14 @@ class _datainputState extends State<datainput> {
                 padding: const EdgeInsets.all(10.0),
                 child: ElevatedButton(
                     onPressed: () {
-                      if(_formkey.currentState!.validate()){
-                                  final data = userdata(
-                                  email: emailController.text,
-                                  name: nameController.text,
-                                  pass: passcontroller.text);
-                                  createdata(data);
-                                  }},
+                      if (_formkey.currentState!.validate()) {
+                        final data = userdata(
+                            email: emailController.text,
+                            name: nameController.text,
+                            pass: passcontroller.text);
+                        createdata(data);
+                      }
+                    },
                     child: const Text(
                       ('Save'),
                     )),

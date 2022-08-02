@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -31,9 +32,7 @@ class _loginState extends State<login> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -62,8 +61,7 @@ class _loginState extends State<login> {
                       if (value!.isEmpty) {
                         return ("Please Enter email");
                       }
-                      if ((RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[A-Z]")
-                          .hasMatch(value))) {
+                      if (!EmailValidator.validate(value)) {
                         return ("Please Enter valid email");
                       }
                       return null;
