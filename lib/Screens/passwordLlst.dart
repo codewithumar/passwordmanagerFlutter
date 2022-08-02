@@ -32,6 +32,15 @@ class _passwordlistState extends State<passwordlist> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    namecontroller.dispose();
+    emailcontroller.dispose();
+    passcontroller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<userdata>>(
@@ -212,6 +221,8 @@ class _passwordlistState extends State<passwordlist> {
                   'name': namecontroller.text
                 });
                 Navigator.of(context).pop();
+
+                //Navigator.of(context).pop();
               },
             ),
             TextButton(
