@@ -90,23 +90,20 @@ class _signupState extends State<signup> {
                         value: 0.8,
                       ));
                   try {
-                    final credientals =
-                        await auth.createUserWithEmailAndPassword(
+                    await auth
+                        .createUserWithEmailAndPassword(
                             email: nameController.text,
-                            password: passwordController.text);
+                            password: passwordController.text)
+                        .then((value) => {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const GeneratePassword())),
+                            });
 
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const GeneratePassword()));
                     buildsnackbar("Signed in");
                   } on FirebaseAuthException catch (error) {
-                    final snackbar = SnackBar(
-                      content: Text(error.toString()),
-                      backgroundColor: Colors.red,
-                    );
-
-                    ScaffoldMessenger.of(context)
-                      ..removeCurrentMaterialBanner()
-                      ..showSnackBar(snackbar);
+                    buildsnackbar(error.toString());
                   }
                 },
               )),

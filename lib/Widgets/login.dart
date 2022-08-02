@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +9,8 @@ import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
 import 'package:passmanager/Widgets/Signup.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Screens/home.dart';
 
 class login extends StatefulWidget {
   const login({Key? key}) : super(key: key);
@@ -26,34 +29,32 @@ class _loginState extends State<login> {
   late SharedPreferences logindata;
   late bool newuser;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  @override
-  void initState() {
-    // TODO: implement initState
+  // @override
+  // void initState() {
+  //
 
-    check_if_already_login();
-    setState(() {});
-    super.initState();
-  }
+  //   check_if_already_login();
+  //   setState(() {});
+  //   super.initState();
+  // }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    nameController.dispose();
-    passwordController.dispose();
-  }
+  // @override
+  // void dispose() {
 
-  void check_if_already_login() async {
-    logindata = await SharedPreferences.getInstance();
-    newuser = (logindata.getBool('login') ?? true);
-    //print(newuser);
-    if (newuser == false) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const GeneratePassword()));
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const GeneratePassword()));
-    }
-  }
+  //   super.dispose();
+  //   nameController.dispose();
+  //   passwordController.dispose();
+  // }
+
+  // void check_if_already_login() async {
+  //   logindata = await SharedPreferences.getInstance();
+  //   newuser = (logindata.getBool('login') ?? true);
+  //   //print(newuser);
+  //   if (newuser == false) {
+  //     Navigator.pushReplacement(
+  //         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -133,20 +134,23 @@ class _loginState extends State<login> {
                     child: ElevatedButton(
                       child: const Text('Login'),
                       onPressed: () async {
-                        logindata.setBool('login', false);
-                        logindata.setString('username', nameController.text);
+                        //logindata.setBool('login', false);
+                        //  logindata.setString('username', nameController.text);
                         if (_formkey.currentState!.validate()) {
                           await auth
                               .signInWithEmailAndPassword(
                                   email: nameController.text,
                                   password: passwordController.text)
                               .then((uid) => {
+                                    FirebaseFirestore.instance
+                                        .collection(uid.user!.email!)
+                                        .doc(uid.user!.uid),
                                     Fluttertoast.showToast(
                                         msg: "Login successfull"),
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const GeneratePassword()))
+                                                const HomeScreen()))
                                   })
                               .catchError((e) {
                             Fluttertoast.showToast(msg: e!.message);
@@ -164,8 +168,17 @@ class _loginState extends State<login> {
                       style: ElevatedButton.styleFrom(
                         onPrimary: Colors.black,
                       ),
-                      onPressed: () {
-                        signInWithGoogle();
+                      onPressed: () async {
+                        await signInWithGoogle().then((uid2) => {
+                              FirebaseFirestore.instance
+                                  .collection(uid2.user!.email!)
+                                  .doc(uid2.user!.uid),
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const HomeScreen()),
+                                  ModalRoute.withName('/'))
+                            });
                       },
                       icon: const FaIcon(
                         FontAwesomeIcons.google,
@@ -183,8 +196,8 @@ class _loginState extends State<login> {
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (context) => signup()));
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => const signup()));
                       },
                     )
                   ],
@@ -236,9 +249,9 @@ class _loginState extends State<login> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-    buildsnackbar("Loged in");
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const GeneratePassword()));
+    //  buildsnackbar("Loged in");
+    showLoaderDialog(context);
+
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

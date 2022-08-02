@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passmanager/Widgets/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,29 +50,23 @@ class GeneratePasswordState extends State<GeneratePassword> {
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
     return Scaffold(
-      appBar: AppBar(title: Text(username.toString()), actions: [
-        IconButton(
-            onPressed: () {
-              auth.signOut();
-              logindata.setBool('login', true);
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const login()));
-            },
-            icon: const Icon(Icons.logout))
-      ]),
+      // appBar: AppBar(title: Text(username.toString()), actions: [
+      //   IconButton(
+      //       onPressed: () {
+      //         auth.signOut();
+      //         logindata.setBool('login', true);
+      //         Fluttertoast.showToast(msg: "Signed Out");
+      //         Navigator.of(context).pushReplacement(
+      //             MaterialPageRoute(builder: (context) => const login()));
+      //       },
+      //       icon: const Icon(Icons.logout))
+      // ]),
       body: Container(
         padding: const EdgeInsets.all(15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              username.toString(),
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.red,
-              ),
-            ),
             const Text(
               "Generate Password",
               style: TextStyle(
@@ -104,6 +99,9 @@ class GeneratePasswordState extends State<GeneratePassword> {
                         }
                       },
                     ))),
+            const SizedBox(
+              height: 20.0,
+            ),
             SizedBox(
                 height: 20,
                 width: 150,
