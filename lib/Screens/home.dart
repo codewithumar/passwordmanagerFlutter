@@ -29,12 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () async {
-                await auth.signOut().then((value) => {
-                      Fluttertoast.showToast(msg: "Signed Out"),
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const login()))
-                    });
-                await GoogleSignIn().signOut();
+                _showMyDialog();
               },
               icon: const Icon(Icons.logout))
         ],
@@ -46,10 +41,13 @@ class _HomeScreenState extends State<HomeScreen> {
       // child: _widgetOptions.elementAt(_selectedIndex),
 
       bottomNavigationBar: BottomNavigationBar(
+
+        showSelectedLabels: true,
+        iconSize: 20,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
-            label: 'DashBoard',
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
@@ -57,8 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
-            label: 'Add ',
+            label: 'Add credientals',
           ),
+
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.cyan,
@@ -76,5 +75,44 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog (
+          title: const Text('Warrning'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: const <Widget>[
+                Text('Are You Sure yoy want to delete?.'),
+              ],
+            ),
+          ),
+          actions: <Widget> [
+            TextButton(
+              child: Text('Confirm'),
+              onPressed: ()async {
+                await auth.signOut().then((value) => {
+                  Fluttertoast.showToast(msg: "Signed Out"),
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const login()))
+                });
+                await GoogleSignIn().signOut();
+               // Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                //Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

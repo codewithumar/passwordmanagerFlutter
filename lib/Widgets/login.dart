@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
 import 'package:passmanager/Widgets/Signup.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,32 +27,14 @@ class _loginState extends State<login> {
   late SharedPreferences logindata;
   late bool newuser;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  // @override
-  // void initState() {
-  //
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
 
-  //   check_if_already_login();
-  //   setState(() {});
-  //   super.initState();
-  // }
-
-  // @override
-  // void dispose() {
-
-  //   super.dispose();
-  //   nameController.dispose();
-  //   passwordController.dispose();
-  // }
-
-  // void check_if_already_login() async {
-  //   logindata = await SharedPreferences.getInstance();
-  //   newuser = (logindata.getBool('login') ?? true);
-  //   //print(newuser);
-  //   if (newuser == false) {
-  //     Navigator.pushReplacement(
-  //         context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-  //   }
-  // }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +114,8 @@ class _loginState extends State<login> {
                     child: ElevatedButton(
                       child: const Text('Login'),
                       onPressed: () async {
-                        //logindata.setBool('login', false);
-                        //  logindata.setString('username', nameController.text);
                         if (_formkey.currentState!.validate()) {
+                          const CircularProgressIndicator();
                           await auth
                               .signInWithEmailAndPassword(
                                   email: nameController.text,
@@ -249,7 +228,7 @@ class _loginState extends State<login> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-    //  buildsnackbar("Loged in");
+
     showLoaderDialog(context);
 
     return await FirebaseAuth.instance.signInWithCredential(credential);

@@ -86,7 +86,7 @@ class _signupState extends State<signup> {
                   Container(
                       alignment: Alignment.topCenter,
                       margin: const EdgeInsets.only(top: 20),
-                      child: CircularProgressIndicator(
+                      child: const CircularProgressIndicator(
                         value: 0.8,
                       ));
                   try {

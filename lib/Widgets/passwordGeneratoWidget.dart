@@ -1,10 +1,7 @@
 import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:passmanager/Widgets/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GeneratePassword extends StatefulWidget {
@@ -48,19 +45,9 @@ class GeneratePasswordState extends State<GeneratePassword> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = FirebaseAuth.instance;
+
     return Scaffold(
-      // appBar: AppBar(title: Text(username.toString()), actions: [
-      //   IconButton(
-      //       onPressed: () {
-      //         auth.signOut();
-      //         logindata.setBool('login', true);
-      //         Fluttertoast.showToast(msg: "Signed Out");
-      //         Navigator.of(context).pushReplacement(
-      //             MaterialPageRoute(builder: (context) => const login()));
-      //       },
-      //       icon: const Icon(Icons.logout))
-      // ]),
+
       body: Container(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -71,7 +58,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
               "Generate Password",
               style: TextStyle(
                 fontSize: 20,
-                color: Colors.red,
+                color: Colors.cyan,
               ),
             ),
             const SizedBox(
@@ -250,7 +237,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
   buildsnackbar(String message) {
     final snackbar = SnackBar(
       content: Text(message),
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.cyan,
     );
 
     ScaffoldMessenger.of(context)
