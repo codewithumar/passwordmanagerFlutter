@@ -16,22 +16,13 @@ class _signupState extends State<signup> {
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences logindata;
   late String? username;
-  // String? email, password;
+
   final auth = FirebaseAuth.instance;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    username = "";
-    setState(() {});
-    initial();
-  }
 
-  void initial() async {
-    logindata = await SharedPreferences.getInstance();
-    setState(() {
-      username = logindata.getString('username');
-    });
+    setState(() {});
   }
 
   @override
@@ -53,7 +44,6 @@ class _signupState extends State<signup> {
               keyboardType: TextInputType.emailAddress,
               controller: nameController,
               onChanged: (value) {
-                // email = value;
                 setState(() {});
               },
               decoration: const InputDecoration(
@@ -63,12 +53,25 @@ class _signupState extends State<signup> {
             ),
           ),
           Container(
+            padding: const EdgeInsets.all(10),
+            child: TextFormField(
+              keyboardType: TextInputType.emailAddress,
+              controller: nameController,
+              onChanged: (value) {
+                setState(() {});
+              },
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Email',
+              ),
+            ),
+          ),
+          Container(
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: TextFormField(
               obscureText: true,
               controller: passwordController,
               onChanged: (value) {
-                //password = value;
                 setState(() {});
               },
               decoration: const InputDecoration(
@@ -77,6 +80,7 @@ class _signupState extends State<signup> {
               ),
             ),
           ),
+          const SizedBox(height: 15),
           Container(
               height: 50,
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),

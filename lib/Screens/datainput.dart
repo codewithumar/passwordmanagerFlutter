@@ -77,7 +77,7 @@ class _datainputState extends State<datainput> {
                               passcontroller.text = generatePasswrod();
                               setState(() {});
                             },
-                            icon: const Icon(Icons.add))),
+                            icon: const Icon(Icons.password))),
                     keyboardType: TextInputType.name,
                   )),
               Container(

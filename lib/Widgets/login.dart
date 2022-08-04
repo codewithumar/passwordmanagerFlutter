@@ -113,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text('Login'),
                       onPressed: () async {
                         if (_formkey.currentState!.validate()) {
-                          const CircularProgressIndicator();
                           await auth
                               .signInWithEmailAndPassword(
                                   email: nameController.text,
@@ -122,12 +121,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     FirebaseFirestore.instance
                                         .collection(uid.user!.email!)
                                         .doc(uid.user!.uid),
+                                    showLoaderDialog(context),
                                     Fluttertoast.showToast(
                                         msg: "Login successfull"),
                                     Navigator.of(context).pushAndRemoveUntil(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const HomeScreen()),(route)=>false)
+                                                const HomeScreen()),
+                                        (route) => false)
                                   })
                               .catchError((e) {
                             Fluttertoast.showToast(msg: e!.message);
@@ -150,6 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               FirebaseFirestore.instance
                                   .collection(uid2.user!.email!)
                                   .doc(uid2.user!.uid),
+                              showLoaderDialog(context),
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
@@ -226,8 +228,6 @@ class _LoginScreenState extends State<LoginScreen> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-
-    showLoaderDialog(context);
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }

@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Password Manger',
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
+        primarySwatch: Colors.red,
       ),
       home: FirebaseAuth.instance.currentUser != null
           ? const HomeScreen()

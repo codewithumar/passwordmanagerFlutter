@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:passmanager/Models/Data.dart';
 
@@ -21,15 +21,15 @@ class _passwordlistState extends State<passwordlist> {
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
   TextEditingController namecontroller = TextEditingController();
+  late bool _passwordVisible = false;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _passwordVisible = false;
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     namecontroller.dispose();
     emailcontroller.dispose();
@@ -42,51 +42,71 @@ class _passwordlistState extends State<passwordlist> {
       body: StreamBuilder<List<userdata>>(
           stream: readusers(),
           builder: (context, snapshot) {
-            print(snapshot.data.toString());
             if (snapshot.hasError) {
-              return const Center(child: Text("Nothing to show up"));
+              return Center(child: Text("Error in loading ${snapshot.error}"));
             } else if (snapshot.hasData) {
               final users = snapshot.data;
               return ListView(
                 children: users!.map(builduserdata).toList(),
               );
+            } else if (snapshot.data == null) {
+              return const Center(child: Text("No Data"));
             } else {
-              return const Center(child:CircularProgressIndicator() );
+              return Center(child: Text("Error in loading ${snapshot.error}"));
             }
           }),
     );
   }
 
-  Widget builduserdata(userdata data) => ListTile(
-        onTap: () {
-          _updateMyDialog(data);
-        },
-        onLongPress: () {
-          _showMyDialog(data);
-        },
-        leading: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              data.name,
-              style: TextStyle(fontWeight: FontWeight.bold),
+  Widget builduserdata(userdata data) => Card(
+        margin: const EdgeInsets.all(10.0),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  data.name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                const SizedBox(height: 5.0),
+                Text(
+                  data.email,
+                ),
+                Text.rich(TextSpan(text: data.pass)),
+              ],
             ),
-          ],
-        ),
-        title: Text(data.email),
-        subtitle: Text(
-          data.pass,
-          style: TextStyle(decoration: TextDecoration.lineThrough),
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.copy),
-          onPressed: () {
-            final pass = ClipboardData(text: data.pass.toString());
-            Clipboard.setData(pass);
-            Fluttertoast.showToast(msg: "Password Copied");
-          },
-        ),
+          ),
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    final pass = ClipboardData(text: data.pass.toString());
+                    Clipboard.setData(pass);
+                    Fluttertoast.showToast(msg: "Password Copied");
+                  },
+                  icon: const Icon(Icons.copy)),
+              IconButton(
+                  onPressed: () {
+                    _showMyDialog(data);
+                  },
+                  icon: const Icon(Icons.delete)),
+              IconButton(
+                  onPressed: () {
+                    emailcontroller.text = data.email;
+                    passcontroller.text = data.pass;
+                    _updateMyDialog(data);
+                  },
+                  icon: const Icon(Icons.edit))
+            ],
+          ),
+        ]),
       );
+
   Stream<List<userdata>> readusers() => FirebaseFirestore.instance
       .collection(currentuser!.email!)
       .snapshots()
@@ -97,7 +117,7 @@ class _passwordlistState extends State<passwordlist> {
   Future<void> _showMyDialog(userdata data) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Warrning'),
@@ -134,7 +154,7 @@ class _passwordlistState extends State<passwordlist> {
   Future<void> _updateMyDialog(userdata data) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(data.name),
@@ -145,7 +165,6 @@ class _passwordlistState extends State<passwordlist> {
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
-                    // initialValue: data.email,
                     controller: emailcontroller,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -156,9 +175,7 @@ class _passwordlistState extends State<passwordlist> {
                       }
                       return null;
                     },
-                    onChanged: (value) {
-                      // email = value;
-                    },
+                    onChanged: (value) {},
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Email',
@@ -169,7 +186,6 @@ class _passwordlistState extends State<passwordlist> {
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
-                    // initialValue: data.pass,
                     controller: passcontroller,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -180,9 +196,7 @@ class _passwordlistState extends State<passwordlist> {
                       }
                       return null;
                     },
-                    onChanged: (value) {
-                      // email = value;
-                    },
+                    onChanged: (value) {},
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Password',
@@ -204,8 +218,6 @@ class _passwordlistState extends State<passwordlist> {
                   'pass': passcontroller.text
                 });
                 Navigator.of(context).pop();
-
-                //Navigator.of(context).pop();
               },
             ),
             TextButton(

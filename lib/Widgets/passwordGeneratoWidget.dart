@@ -57,7 +57,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
               "Generate Password",
               style: TextStyle(
                 fontSize: 20,
-                color: Colors.cyan,
+                color: Colors.red,
               ),
             ),
             const SizedBox(
