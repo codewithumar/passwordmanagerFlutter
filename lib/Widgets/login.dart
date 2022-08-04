@@ -11,14 +11,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/home.dart';
 
-class login extends StatefulWidget {
-  const login({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<login> createState() => _loginState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _loginState extends State<login> {
+class _LoginScreenState extends State<LoginScreen> {
   final auth = FirebaseAuth.instance;
   final user = FirebaseAuth.instance.currentUser;
   final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
@@ -124,10 +124,10 @@ class _loginState extends State<login> {
                                         .doc(uid.user!.uid),
                                     Fluttertoast.showToast(
                                         msg: "Login successfull"),
-                                    Navigator.of(context).pushReplacement(
+                                    Navigator.of(context).pushAndRemoveUntil(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const HomeScreen()))
+                                                const HomeScreen()),(route)=>false)
                                   })
                               .catchError((e) {
                             Fluttertoast.showToast(msg: e!.message);

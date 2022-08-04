@@ -1,7 +1,8 @@
 import 'dart:math';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GeneratePassword extends StatefulWidget {
@@ -45,9 +46,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       body: Container(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -77,12 +76,13 @@ class GeneratePasswordState extends State<GeneratePassword> {
                       icon: const Icon(Icons.copy),
                       onPressed: () {
                         if (controller.text == '') {
-                          buildsnackbar("Error! Password Field is empty");
+                          buildsnackbar(
+                              context, "Error! Password Field is empty");
                         } else {
                           final data = ClipboardData(text: controller.text);
                           Clipboard.setData(data);
 
-                          buildsnackbar("Password Coppied");
+                          buildsnackbar(context, "Password Coppied");
                         }
                       },
                     ))),
@@ -234,7 +234,7 @@ class GeneratePasswordState extends State<GeneratePassword> {
     );
   }
 
-  buildsnackbar(String message) {
+  buildsnackbar(BuildContext conetxt, String message) {
     final snackbar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.cyan,
@@ -247,12 +247,14 @@ class GeneratePasswordState extends State<GeneratePassword> {
 
   Widget buildButton() {
     return ElevatedButton(
-        child: const Text("Generate"),
-        onPressed: () {
-          final password = generatePasswrod();
-          controller.text = password;
-          setState(() {});
-        });
+      child: const Text("Generate"),
+      onPressed: () {
+        final password = generatePasswrod();
+
+        controller.text = password;
+        setState(() {});
+      },
+    );
   }
 
   String generatePasswrod() {
@@ -265,9 +267,18 @@ class GeneratePasswordState extends State<GeneratePassword> {
     chars += hasNumbers == true ? numbers : "";
     chars += hasLowerCase == true ? smallalphabets : "";
     chars += hasSpecial == true ? special : "";
-    return List.generate(value, (index) {
-      final random = Random().nextInt(chars.length);
-      return chars[random];
-    }).join('');
+
+    if (chars.isEmpty) {
+      buildsnackbar(context, "Please select any option in Setting ");
+      return '';
+    }
+
+    return List.generate(
+      value,
+      (index) {
+        final random = Random().nextInt(chars.length);
+        return chars[random];
+      },
+    ).join('');
   }
 }

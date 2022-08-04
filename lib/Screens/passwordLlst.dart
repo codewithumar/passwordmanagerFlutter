@@ -1,15 +1,12 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:passmanager/Models/Data.dart';
-import 'package:passmanager/Screens/datainput.dart';
 
 class passwordlist extends StatefulWidget {
   const passwordlist({Key? key}) : super(key: key);
@@ -28,7 +25,6 @@ class _passwordlistState extends State<passwordlist> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {});
   }
 
   @override
@@ -46,7 +42,7 @@ class _passwordlistState extends State<passwordlist> {
       body: StreamBuilder<List<userdata>>(
           stream: readusers(),
           builder: (context, snapshot) {
-            //print(snapshot.data.toString());
+            print(snapshot.data.toString());
             if (snapshot.hasError) {
               return const Center(child: Text("Nothing to show up"));
             } else if (snapshot.hasData) {
@@ -55,7 +51,7 @@ class _passwordlistState extends State<passwordlist> {
                 children: users!.map(builduserdata).toList(),
               );
             } else {
-              return const Center(child: Text("Nothing to show up"));
+              return const Center(child:CircularProgressIndicator() );
             }
           }),
     );
@@ -150,18 +146,6 @@ class _passwordlistState extends State<passwordlist> {
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     // initialValue: data.email,
-                    controller: namecontroller,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Name',
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    // initialValue: data.email,
                     controller: emailcontroller,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -189,10 +173,10 @@ class _passwordlistState extends State<passwordlist> {
                     controller: passcontroller,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return ("Please Enter email");
+                        return ("Please Enter Password");
                       }
                       if (!EmailValidator.validate(value)) {
-                        return ("Please Enter valid email");
+                        return ("Please Enter valid password");
                       }
                       return null;
                     },
@@ -217,8 +201,7 @@ class _passwordlistState extends State<passwordlist> {
                     .doc(data.name);
                 doc.update({
                   'email': emailcontroller.text,
-                  'pass': passcontroller.text,
-                  'name': namecontroller.text
+                  'pass': passcontroller.text
                 });
                 Navigator.of(context).pop();
 

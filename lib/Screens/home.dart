@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () async {
-                _showMyDialog();
+                await _showMyDialog();
               },
               icon: const Icon(Icons.logout))
         ],
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 await auth.signOut().then((value) => {
                       Fluttertoast.showToast(msg: "Signed Out"),
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const login()))
+                          builder: (context) => const LoginScreen()))
                     });
                 await GoogleSignIn().signOut();
                 // Navigator.of(context).pop();

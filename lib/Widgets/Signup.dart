@@ -98,7 +98,7 @@ class _signupState extends State<signup> {
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const GeneratePassword())),
+                                          const LoginScreen())),
                             });
 
                     buildsnackbar("Signed in");
@@ -118,8 +118,8 @@ class _signupState extends State<signup> {
                   style: TextStyle(fontSize: 20),
                 ),
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const login()));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const LoginScreen()));
                 },
               )
             ],
