@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,26 +8,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:passmanager/Models/Data.dart';
+import 'package:passmanager/Models/data.dart';
 
-class passwordlist extends StatefulWidget {
-  const passwordlist({Key? key}) : super(key: key);
+class PasswordList extends StatefulWidget {
+  const PasswordList({Key? key}) : super(key: key);
 
   @override
-  State<passwordlist> createState() => _passwordlistState();
+  State<PasswordList> createState() => _PasswordListState();
 }
 
-class _passwordlistState extends State<passwordlist> {
+class _PasswordListState extends State<PasswordList> {
   final auth = FirebaseAuth.instance;
   final currentuser = FirebaseAuth.instance.currentUser;
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passcontroller = TextEditingController();
   TextEditingController namecontroller = TextEditingController();
-  late bool _passwordVisible = false;
+
   @override
   void initState() {
     super.initState();
-    _passwordVisible = false;
   }
 
   @override
@@ -39,7 +40,7 @@ class _passwordlistState extends State<passwordlist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<List<userdata>>(
+      body: StreamBuilder<List<UserData>>(
           stream: readusers(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
@@ -58,7 +59,7 @@ class _passwordlistState extends State<passwordlist> {
     );
   }
 
-  Widget builduserdata(userdata data) => Card(
+  Widget builduserdata(UserData data) => Card(
         margin: const EdgeInsets.all(10.0),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -107,14 +108,14 @@ class _passwordlistState extends State<passwordlist> {
         ]),
       );
 
-  Stream<List<userdata>> readusers() => FirebaseFirestore.instance
+  Stream<List<UserData>> readusers() => FirebaseFirestore.instance
       .collection(currentuser!.email!)
       .snapshots()
       .map((snapshot) => snapshot.docs
-          .map((doc) => userdata.fromuserdata(doc.data()))
+          .map((doc) => UserData.fromuserdata(doc.data()))
           .toList());
 
-  Future<void> _showMyDialog(userdata data) async {
+  Future<void> _showMyDialog(UserData data) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -140,7 +141,7 @@ class _passwordlistState extends State<passwordlist> {
               },
             ),
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -151,82 +152,89 @@ class _passwordlistState extends State<passwordlist> {
     );
   }
 
-  Future<void> _updateMyDialog(userdata data) async {
+  Future<void> _updateMyDialog(UserData data) async {
+    final GlobalKey formkey = GlobalKey<FormState>();
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(data.name),
-          content: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: emailcontroller,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return ("Please Enter email");
-                      }
-                      if (!EmailValidator.validate(value)) {
-                        return ("Please Enter valid email");
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {},
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Email',
+        return Form(
+          key: formkey,
+          child: AlertDialog(
+            title: Text(data.name),
+            content: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailcontroller,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return ("Please Enter email");
+                        }
+                        if (!EmailValidator.validate(value)) {
+                          return ("Please Enter valid email");
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {},
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                        labelText: 'Email',
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: passcontroller,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return ("Please Enter Password");
-                      }
-                      if (!EmailValidator.validate(value)) {
-                        return ("Please Enter valid password");
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {},
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      controller: passcontroller,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return ("Please Enter Password");
+                        }
+                        if (!EmailValidator.validate(value)) {
+                          return ("Please Enter valid password");
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Password',
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            actions: <Widget>[
+              TextButton(
+                  child: const Text('Update'),
+                  onPressed: () {
+                    {
+                      final doc = FirebaseFirestore.instance
+                          .collection(currentuser!.email!)
+                          .doc(data.name);
+                      doc.update({
+                        'email': emailcontroller.text,
+                        'pass': passcontroller.text
+                      });
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    }
+                  }),
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Update'),
-              onPressed: () {
-                final doc = FirebaseFirestore.instance
-                    .collection(currentuser!.email!)
-                    .doc(data.name);
-                doc.update({
-                  'email': emailcontroller.text,
-                  'pass': passcontroller.text
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );

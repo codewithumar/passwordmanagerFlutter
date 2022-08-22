@@ -5,7 +5,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:passmanager/Screens/datainput.dart';
 import 'package:passmanager/Screens/passwordLlst.dart';
 import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Widgets/login.dart';
 
@@ -66,8 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     GeneratePassword(),
-    passwordlist(),
-    datainput(),
+    PasswordList(),
+    DataInput(),
   ];
   void _onItemTapped(int index) {
     setState(() {
@@ -78,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Warrning'),
@@ -93,19 +92,29 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               child: const Text('Confirm'),
               onPressed: () async {
-                await auth.signOut().then((value) => {
+                await auth.signOut().then(
+                      (value) => {
+                        Fluttertoast.showToast(msg: "Signed Out"),
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()),
+                            (route) => false)
+                      },
+                    );
+                await GoogleSignIn().signOut().then((value) => {
                       Fluttertoast.showToast(msg: "Signed Out"),
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const LoginScreen()))
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                          (route) => false)
                     });
-                await GoogleSignIn().signOut();
                 // Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
-                //Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
             ),
           ],

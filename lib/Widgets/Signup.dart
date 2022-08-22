@@ -1,17 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
-import 'package:passmanager/Widgets/login.dart';
-import 'package:passmanager/Widgets/passwordGeneratoWidget.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class signup extends StatefulWidget {
-  const signup({Key? key}) : super(key: key);
+import 'package:passmanager/Widgets/login.dart';
+
+class SignUp extends StatefulWidget {
+  const SignUp({Key? key}) : super(key: key);
 
   @override
-  State<signup> createState() => _signupState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _signupState extends State<signup> {
+class _SignUpState extends State<SignUp> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences logindata;
@@ -42,7 +45,6 @@ class _signupState extends State<signup> {
             padding: const EdgeInsets.all(10),
             child: TextFormField(
               keyboardType: TextInputType.emailAddress,
-              controller: nameController,
               onChanged: (value) {
                 setState(() {});
               },
@@ -82,35 +84,43 @@ class _signupState extends State<signup> {
           ),
           const SizedBox(height: 15),
           Container(
-              height: 50,
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: ElevatedButton(
-                child: const Text('Create Account'),
-                onPressed: () async {
-                  Container(
-                      alignment: Alignment.topCenter,
-                      margin: const EdgeInsets.only(top: 20),
-                      child: const CircularProgressIndicator(
-                        value: 0.8,
-                      ));
-                  try {
-                    await auth
-                        .createUserWithEmailAndPassword(
-                            email: nameController.text,
-                            password: passwordController.text)
-                        .then((value) => {
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen())),
-                            });
+            height: 50,
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: ElevatedButton(
+              child: const Text('Create Account'),
+              onPressed: () async {
+                Container(
+                  alignment: Alignment.topCenter,
+                  margin: const EdgeInsets.only(top: 20),
+                  child: const CircularProgressIndicator(
+                    value: 0.8,
+                  ),
+                );
+                try {
+                  await auth
+                      .createUserWithEmailAndPassword(
+                        email: nameController.text,
+                        password: passwordController.text,
+                      )
+                      .then(
+                        (value) => {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          ),
+                        },
+                      );
 
-                    buildsnackbar("Signed in");
-                  } on FirebaseAuthException catch (error) {
-                    buildsnackbar(error.toString());
-                  }
-                },
-              )),
+                  buildsnackbar("Signed in");
+                } on FirebaseAuthException catch (error) {
+                  buildsnackbar(
+                    error.message.toString(),
+                  );
+                }
+              },
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

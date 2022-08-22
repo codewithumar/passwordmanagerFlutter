@@ -30,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setState(() {});
   }
@@ -152,11 +151,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .collection(uid2.user!.email!)
                                   .doc(uid2.user!.uid),
                               showLoaderDialog(context),
-                              Navigator.pushAndRemoveUntil(
-                                  context,
+                              Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
                                       builder: (context) => const HomeScreen()),
-                                  ModalRoute.withName('/'))
+                                  (route) => false)
                             });
                       },
                       icon: const FaIcon(
@@ -176,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => const signup()));
+                            builder: (context) => const SignUp()));
                       },
                     )
                   ],

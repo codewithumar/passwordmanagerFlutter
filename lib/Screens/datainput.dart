@@ -6,25 +6,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:passmanager/Models/Data.dart';
+import 'package:passmanager/Models/data.dart';
 
-class datainput extends StatefulWidget {
-  const datainput({Key? key}) : super(key: key);
+class DataInput extends StatefulWidget {
+  const DataInput({Key? key}) : super(key: key);
 
   @override
-  State<datainput> createState() => _datainputState();
+  State<DataInput> createState() => _DataInputState();
 }
 
-class _datainputState extends State<datainput> {
+class _DataInputState extends State<DataInput> {
   TextEditingController passcontroller = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+    GlobalKey<FormState> formkey = GlobalKey<FormState>();
     return Material(
       child: Form(
-        key: _formkey,
+        key: formkey,
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: ListView(
@@ -59,6 +59,7 @@ class _datainputState extends State<datainput> {
               Container(
                   padding: const EdgeInsets.all(5.0),
                   child: TextFormField(
+                    onChanged: (text) => setState(() => text),
                     validator: (value) {
                       RegExp regex = RegExp(r'^.{6,}$');
                       if (value!.isEmpty) {
@@ -84,8 +85,8 @@ class _datainputState extends State<datainput> {
                 padding: const EdgeInsets.all(10.0),
                 child: ElevatedButton(
                     onPressed: () {
-                      if (_formkey.currentState!.validate()) {
-                        final data = userdata(
+                      if (formkey.currentState!.validate()) {
+                        final data = UserData(
                             email: emailController.text,
                             name: nameController.text,
                             pass: passcontroller.text);
@@ -103,7 +104,7 @@ class _datainputState extends State<datainput> {
     );
   }
 
-  Future createdata(userdata data) async {
+  Future createdata(UserData data) async {
     await FirebaseFirestore.instance
         .collection(FirebaseAuth.instance.currentUser!.email!)
         .doc(data.name)
